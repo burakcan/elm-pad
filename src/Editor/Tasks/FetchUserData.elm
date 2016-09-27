@@ -1,4 +1,4 @@
-module Editor.FetchUserData exposing (fetchUserData)
+module Editor.Tasks.FetchUserData exposing (fetchUserData)
 
 import Editor.Types exposing (Msg(..), User, FetchError(..), UserData)
 import Task exposing (Task)

@@ -1,10 +1,11 @@
 module Editor.EditorView exposing (editorView)
 
 import Editor.Types exposing (Model, Msg)
-import Editor.Style exposing (editorStyles, ClassNames(..))
-import Html exposing (Html, div, text, node)
-import Html.Attributes exposing (classList, class, id)
-import Html.CssHelpers
+import Editor.Style exposing (editorStyles, ClassNames(..), nsHelpers)
+import Editor.Views.CreateProjectForm exposing (createProjectForm)
+import Editor.Views.LoadingView exposing (loadingView)
+import Html exposing (Html, div, text, node, i)
+import Html.Attributes exposing (classList, class, id, style)
 
 
 editorView : Model -> Html Msg
@@ -19,12 +20,10 @@ editorView model =
             [ div [ classNs [ TabBar ] ] []
             , div [ classNs [ AceArea ], id "aceArea" ] []
             ]
+        , createProjectForm model
+        , loadingView model
         ]
 
 
 ( classNs, classListNs, idNs ) =
-    let
-        { class, classList, id } =
-            Html.CssHelpers.withNamespace "Editor_"
-    in
-        ( class, classList, id )
+    nsHelpers

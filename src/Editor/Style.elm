@@ -3,6 +3,15 @@ module Editor.Style exposing (..)
 import Css exposing (..)
 import Css.Elements exposing (..)
 import Css.Namespace exposing (namespace)
+import Html.CssHelpers
+
+
+nsHelpers =
+    let
+        { class, classList, id } =
+            Html.CssHelpers.withNamespace "Editor_"
+    in
+        ( class, classList, id )
 
 
 type ClassNames
@@ -13,6 +22,7 @@ type ClassNames
     | RightBlock
     | TabBar
     | AceArea
+    | Overlay
 
 
 withNs =
@@ -64,5 +74,15 @@ wrapper =
                 , marginBottom (px 10)
                 ]
             ]
+        ]
+    , (.) Overlay
+        [ position fixed
+        , left (px 0)
+        , top (px 0)
+        , width (vw 100)
+        , height (vh 100)
+        , displayFlex
+        , alignItems center
+        , textAlign center
         ]
     ]

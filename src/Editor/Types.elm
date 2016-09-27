@@ -13,6 +13,9 @@ type FetchError
 type Msg
     = FetchUserDataSuccess UserData
     | FetchUserDataError FetchError
+    | CreateProject
+    | CreateProjectSuccess String
+    | CreateProjectError FetchError
 
 
 type alias User =
@@ -33,7 +36,16 @@ type alias UserData =
     }
 
 
+type alias Project =
+    { name : String
+    , id : String
+    , files : List ( String, String )
+    }
+
+
 type alias Model =
     { user : User
     , userData : Maybe UserData
+    , showCreateProject : Bool
+    , projects : List Project
     }
