@@ -3,6 +3,8 @@ module Editor.State exposing (init, update, subscriptions)
 import Editor.Types exposing (Model, Msg(..), User)
 import Editor.Tasks.FetchUserMeta exposing (fetchUserMeta)
 import Editor.Tasks.CreateProject exposing (createProject)
+import Editor.Tasks.LoadFiles exposing (loadFiles)
+import Editor.Selectors exposing (getProjectById)
 import Maybe exposing (withDefault)
 import Dict
 import String
@@ -31,12 +33,21 @@ update msg model =
     in
         case msg of
             FetchUserMetaSuccess userMeta ->
-                ( { model
-                    | userMeta = Just userMeta
-                    , activeProject = (List.head <| Dict.values userMeta.projects)
-                  }
-                , Cmd.none
-                )
+                let
+                    newModel =
+                        { model
+                            | userMeta = Just userMeta
+                        }
+
+                    firstProjectId =
+                        case List.head userMeta.projects of
+                            Nothing ->
+                                ""
+
+                            Just ( id, _ ) ->
+                                id
+                in
+                    update (ActivateProject firstProjectId) newModel
 
             FetchUserMetaError _ ->
                 ( model, Cmd.none )
@@ -59,6 +70,50 @@ update msg model =
                 ( model, fetchUserMeta model.user )
 
             CreateProjectError err ->
+                ( model, Cmd.none )
+
+            ActivateProject id ->
+                let
+                    project =
+                        getProjectById model id
+
+                    cmd =
+                        case project of
+                            Nothing ->
+                                Cmd.none
+
+                            Just project_ ->
+                                loadFiles project_ model.user
+                in
+                    ( { model
+                        | activeProject = project
+                      }
+                    , cmd
+                    )
+
+            LoadFilesSuccess result ->
+                let
+                    activeProject =
+                        Maybe.andThen
+                            result
+                            (\( newId, new ) ->
+                                Maybe.andThen
+                                    model.activeProject
+                                    (\( oldId, _ ) ->
+                                        if oldId == newId then
+                                            Just ( newId, new )
+                                        else
+                                            Nothing
+                                    )
+                            )
+                in
+                    ( { model
+                        | activeProject = activeProject
+                      }
+                    , Cmd.none
+                    )
+
+            LoadFilesError _ ->
                 ( model, Cmd.none )
 
 

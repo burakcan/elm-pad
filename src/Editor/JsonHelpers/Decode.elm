@@ -31,12 +31,12 @@ decodeUserMeta : Decode.Decoder UserMeta
 decodeUserMeta =
     Decode.object1 UserMeta
         (Decode.map
-            (\result -> Dict.empty `withDefault` result)
+            (\result -> [] `withDefault` result)
             (Decode.maybe
                 << Decode.at [ "projects" ]
              <|
                 Decode.map
-                    (\result -> result)
+                    Dict.toList
                     (Decode.dict <|
                         Decode.object3 Project
                             (Decode.at [ "name" ] Decode.string)
@@ -45,14 +45,3 @@ decodeUserMeta =
                     )
             )
         )
-
-
-idFromMetaSave : Http.Value -> String
-idFromMetaSave result =
-    case result of
-        Http.Blob _ ->
-            ""
-
-        Http.Text text ->
-            Result.withDefault "" <|
-                Decode.decodeString (Decode.at [ "name" ] Decode.string) text

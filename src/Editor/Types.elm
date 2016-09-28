@@ -26,6 +26,21 @@ type Msg
     | CreateProject
     | CreateProjectSuccess Project
     | CreateProjectError FetchError
+    | ActivateProject ProjectId
+    | LoadFilesSuccess (Maybe ( ProjectId, Project ))
+    | LoadFilesError FetchError
+
+
+type alias ProjectId =
+    String
+
+
+type alias GistId =
+    String
+
+
+type alias FileName =
+    String
 
 
 
@@ -33,7 +48,7 @@ type Msg
 
 
 type alias UserMeta =
-    { projects : Dict String Project
+    { projects : List ( ProjectId, Project )
     }
 
 
@@ -59,7 +74,7 @@ type alias User =
 
 
 type alias File =
-    { name : String
+    { name : FileName
     , fileType : String
     , size : Int
     , content : String
@@ -72,8 +87,8 @@ type alias File =
 
 type alias Project =
     { name : String
-    , gistId : String
-    , files : Maybe (Dict String File)
+    , gistId : GistId
+    , files : Maybe (Dict FileName File)
     }
 
 
@@ -82,9 +97,9 @@ type alias Project =
 
 
 type alias Gist =
-    { id : String
+    { id : GistId
     , url : String
-    , files : Dict String File
+    , files : Dict FileName File
     , public : Bool
     }
 
@@ -96,6 +111,6 @@ type alias Gist =
 type alias Model =
     { user : User
     , userMeta : Maybe UserMeta
-    , activeProject : Maybe Project
+    , activeProject : Maybe ( ProjectId, Project )
     , showCreateProject : Bool
     }

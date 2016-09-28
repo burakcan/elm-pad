@@ -1,7 +1,7 @@
 module Editor.Tasks.CreateProject exposing (createProject)
 
 import Editor.Types exposing (Msg(..), FetchError(..), User, Project, Gist, File)
-import Editor.JsonHelpers.Decode exposing (decodeGist, decodeGistFiles, idFromMetaSave)
+import Editor.JsonHelpers.Decode exposing (decodeGist, decodeGistFiles)
 import Editor.JsonHelpers.Encode exposing (encodeGistMeta, encodeInput)
 import Task exposing (Task)
 import Http
