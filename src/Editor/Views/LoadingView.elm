@@ -10,7 +10,7 @@ import Html.CssHelpers
 
 loadingView : Model -> Html Msg
 loadingView model =
-    case model.userData of
+    case model.userMeta of
         Nothing ->
             div [ classNs [ Overlay ] ]
                 [ i

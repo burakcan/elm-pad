@@ -1,6 +1,16 @@
-module Editor.Types exposing (Model, Msg(..), User, UserData, FetchError(..))
+module Editor.Types
+    exposing
+        ( Model
+        , Msg(..)
+        , FetchError(..)
+        , User
+        , UserMeta
+        , File
+        , Project
+        , Gist
+        )
 
-import Json.Decode as Decode
+import Dict exposing (Dict)
 import Http
 
 
@@ -11,11 +21,24 @@ type FetchError
 
 
 type Msg
-    = FetchUserDataSuccess UserData
-    | FetchUserDataError FetchError
+    = FetchUserMetaSuccess UserMeta
+    | FetchUserMetaError FetchError
     | CreateProject
-    | CreateProjectSuccess String
+    | CreateProjectSuccess Project
     | CreateProjectError FetchError
+
+
+
+-- UserMeta: Firebase
+
+
+type alias UserMeta =
+    { projects : Dict String Project
+    }
+
+
+
+-- User: (Auth.User / Github User) + UserMeta
 
 
 type alias User =
@@ -31,21 +54,48 @@ type alias User =
     }
 
 
-type alias UserData =
-    { projects : List String
+
+-- File: Github Gist File
+
+
+type alias File =
+    { name : String
+    , fileType : String
+    , size : Int
+    , content : String
     }
+
+
+
+-- Project: Local and Firebase
 
 
 type alias Project =
     { name : String
-    , id : String
-    , files : List ( String, String )
+    , gistId : String
+    , files : Maybe (Dict String File)
     }
+
+
+
+-- Gist: Github gist
+
+
+type alias Gist =
+    { id : String
+    , url : String
+    , files : Dict String File
+    , public : Bool
+    }
+
+
+
+--
 
 
 type alias Model =
     { user : User
-    , userData : Maybe UserData
+    , userMeta : Maybe UserMeta
+    , activeProject : Maybe Project
     , showCreateProject : Bool
-    , projects : List Project
     }

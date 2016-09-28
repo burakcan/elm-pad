@@ -1,9 +1,10 @@
 module Editor.State exposing (init, update, subscriptions)
 
 import Editor.Types exposing (Model, Msg(..), User)
-import Editor.Tasks.FetchUserData exposing (fetchUserData)
+import Editor.Tasks.FetchUserMeta exposing (fetchUserMeta)
 import Editor.Tasks.CreateProject exposing (createProject)
-import List
+import Maybe exposing (withDefault)
+import Dict
 import String
 import Border exposing (stringPort)
 
@@ -11,54 +12,54 @@ import Border exposing (stringPort)
 init : User -> ( Model, Cmd Msg )
 init user =
     ( { user = user
-      , userData = Nothing
+      , userMeta = Nothing
+      , activeProject = Nothing
       , showCreateProject = False
-      , projects = []
       }
     , Cmd.batch
         [ stringPort ( "INIT_EDITOR", "aceArea" )
-        , fetchUserData user
+        , fetchUserMeta user
         ]
     )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
-        FetchUserDataSuccess userData ->
-            let
-                userData_ =
-                    { userData
-                        | projects = List.filter (\a -> String.length a > 0) userData.projects
-                    }
-            in
+    let
+        _ =
+            Debug.log "msg" msg
+    in
+        case msg of
+            FetchUserMetaSuccess userMeta ->
                 ( { model
-                    | userData = Just userData_
+                    | userMeta = Just userMeta
+                    , activeProject = (List.head <| Dict.values userMeta.projects)
                   }
                 , Cmd.none
                 )
 
-        FetchUserDataError _ ->
-            ( model, Cmd.none )
+            FetchUserMetaError _ ->
+                ( model, Cmd.none )
 
-        CreateProject ->
-            ( model
-            , createProject
-                { description = "description deneme"
-                , private = True
-                , files =
-                    [ ( "Main.elm", "deneme deneme main.elm" )
-                    , ( "elm-package.json", "two file deneme" )
-                    ]
-                }
-                model.user
-            )
+            CreateProject ->
+                ( model
+                , createProject
+                    { name = "Deneme"
+                    , description = "description deneme"
+                    , private = True
+                    , files =
+                        [ ( "Main.elm", "deneme deneme main.elm" )
+                        , ( "elm-package.json", "two file deneme" )
+                        ]
+                    }
+                    model.user
+                )
 
-        CreateProjectSuccess result ->
-            ( model, Cmd.none )
+            CreateProjectSuccess result ->
+                ( model, fetchUserMeta model.user )
 
-        CreateProjectError err ->
-            ( model, Cmd.none )
+            CreateProjectError err ->
+                ( model, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg

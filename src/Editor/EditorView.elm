@@ -10,19 +10,23 @@ import Html.Attributes exposing (classList, class, id, style)
 
 editorView : Model -> Html Msg
 editorView model =
-    div [ classNs [ Wrapper ] ]
-        [ node "style" [] [ text editorStyles ]
-        , div [ classNs [ Sidebar ] ]
-            [ div [ classNs [ SidebarContent ] ] []
-            , div [ classNs [ SidebarResizer ] ] []
+    let
+        _ =
+            Debug.log "model" model
+    in
+        div [ classNs [ Wrapper ] ]
+            [ node "style" [] [ text editorStyles ]
+            , div [ classNs [ Sidebar ] ]
+                [ div [ classNs [ SidebarContent ] ] []
+                , div [ classNs [ SidebarResizer ] ] []
+                ]
+            , div [ classNs [ RightBlock ] ]
+                [ div [ classNs [ TabBar ] ] []
+                , div [ classNs [ AceArea ], id "aceArea" ] []
+                ]
+            , createProjectForm model
+            , loadingView model
             ]
-        , div [ classNs [ RightBlock ] ]
-            [ div [ classNs [ TabBar ] ] []
-            , div [ classNs [ AceArea ], id "aceArea" ] []
-            ]
-        , createProjectForm model
-        , loadingView model
-        ]
 
 
 ( classNs, classListNs, idNs ) =

@@ -2,7 +2,7 @@ module Editor.Views.CreateProjectForm exposing (createProjectForm)
 
 import Editor.Types exposing (Model, Msg(..))
 import Editor.Style exposing (ClassNames(..), nsHelpers)
-import List
+import Dict
 import Html exposing (Html, div, text, i, button)
 import Html.Attributes exposing (classList)
 import Html.Events exposing (onClick)
@@ -10,12 +10,12 @@ import Html.Events exposing (onClick)
 
 createProjectForm : Model -> Html Msg
 createProjectForm model =
-    case model.userData of
+    case model.userMeta of
         Nothing ->
             text ""
 
-        Just userData ->
-            if model.showCreateProject || List.length userData.projects == 0 then
+        Just userMeta ->
+            if model.showCreateProject || Dict.size userMeta.projects == 0 then
                 div [ classNs [ Overlay ] ]
                     [ text "create project"
                     , button [ onClick CreateProject ] [ text "create now" ]
