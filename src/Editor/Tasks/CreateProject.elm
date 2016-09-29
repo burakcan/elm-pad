@@ -64,5 +64,6 @@ saveToUserMeta input user gist =
                         input.name
                         gist.id
                         (Just gist.files)
+                        False
                     )
             )

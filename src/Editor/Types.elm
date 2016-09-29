@@ -6,6 +6,8 @@ module Editor.Types
         , User
         , UserMeta
         , File
+        , FileTree
+        , FileTreeNode(..)
         , Project
         , Gist
         )
@@ -26,21 +28,6 @@ type Msg
     | CreateProject
     | CreateProjectSuccess Project
     | CreateProjectError FetchError
-    | ActivateProject ProjectId
-    | LoadFilesSuccess (Maybe ( ProjectId, Project ))
-    | LoadFilesError FetchError
-
-
-type alias ProjectId =
-    String
-
-
-type alias GistId =
-    String
-
-
-type alias FileName =
-    String
 
 
 
@@ -48,7 +35,7 @@ type alias FileName =
 
 
 type alias UserMeta =
-    { projects : List ( ProjectId, Project )
+    { projects : List ( String, Project )
     }
 
 
@@ -70,15 +57,30 @@ type alias User =
 
 
 
--- File: Github Gist File
+-- File Tree
 
 
 type alias File =
-    { name : FileName
+    { name : String
     , fileType : String
     , size : Int
     , content : String
     }
+
+
+type alias Folder =
+    { name : String
+    , children : FileTree
+    }
+
+
+type FileTreeNode
+    = FileNode File
+    | FolderNode Folder
+
+
+type alias FileTree =
+    Dict String FileTreeNode
 
 
 
@@ -87,8 +89,9 @@ type alias File =
 
 type alias Project =
     { name : String
-    , gistId : GistId
-    , files : Maybe (Dict FileName File)
+    , gistId : String
+    , files : Maybe FileTree
+    , expanded : Bool
     }
 
 
@@ -97,9 +100,9 @@ type alias Project =
 
 
 type alias Gist =
-    { id : GistId
+    { id : String
     , url : String
-    , files : Dict FileName File
+    , files : FileTree
     , public : Bool
     }
 
@@ -110,7 +113,6 @@ type alias Gist =
 
 type alias Model =
     { user : User
-    , userMeta : Maybe UserMeta
-    , activeProject : Maybe ( ProjectId, Project )
+    , projects : List ( String, Project )
     , showCreateProject : Bool
     }

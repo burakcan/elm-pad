@@ -1,0 +1,8 @@
+html, body {
+  background: #263238;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: inherit;
+}

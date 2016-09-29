@@ -1,6 +1,6 @@
 module Editor.JsonHelpers.Decode exposing (..)
 
-import Editor.Types exposing (Gist, File, UserMeta, Project)
+import Editor.Types exposing (Gist, File, UserMeta, Project, FileTree, FileTreeNode(..))
 import Json.Decode as Decode
 import Dict exposing (Dict)
 import Maybe exposing (withDefault)
@@ -16,14 +16,16 @@ decodeGist =
         (Decode.at [ "public" ] Decode.bool)
 
 
-decodeGistFiles : Decode.Decoder (Dict String File)
+decodeGistFiles : Decode.Decoder (Dict String FileTreeNode)
 decodeGistFiles =
     Decode.dict
-        (Decode.object4 File
-            (Decode.at [ "filename" ] Decode.string)
-            (Decode.at [ "type" ] Decode.string)
-            (Decode.at [ "size" ] Decode.int)
-            (Decode.at [ "content" ] Decode.string)
+        (Decode.map (\file -> FileNode file)
+            (Decode.object4 File
+                (Decode.at [ "filename" ] Decode.string)
+                (Decode.at [ "type" ] Decode.string)
+                (Decode.at [ "size" ] Decode.int)
+                (Decode.at [ "content" ] Decode.string)
+            )
         )
 
 
@@ -38,10 +40,11 @@ decodeUserMeta =
                 Decode.map
                     Dict.toList
                     (Decode.dict <|
-                        Decode.object3 Project
+                        Decode.object4 Project
                             (Decode.at [ "name" ] Decode.string)
                             (Decode.at [ "gistId" ] Decode.string)
                             (Decode.succeed Nothing)
+                            (Decode.succeed False)
                     )
             )
         )
