@@ -43,11 +43,6 @@
   flex-direction: column;
 }
 
-.RightBlock .TabBar {
-  flex: none;
-  height: 40px;
-}
-
 .RightBlock .AceArea {
   flex: 1;
   border: 1px solid #455A64;

@@ -16,18 +16,21 @@ decodeGist =
         (Decode.at [ "public" ] Decode.bool)
 
 
-decodeGistFiles : Decode.Decoder (Dict String FileTreeNode)
+decodeGistFiles : Decode.Decoder (List FileTreeNode)
 decodeGistFiles =
-    Decode.dict
-        (Decode.map (\file -> FileNode file)
-            (Decode.object5 File
-                (Decode.at [ "filename" ] Decode.string)
-                (Decode.at [ "type" ] Decode.string)
-                (Decode.at [ "size" ] Decode.int)
-                (Decode.at [ "content" ] Decode.string)
-                (Decode.at [ "raw_url" ] Decode.string)
+    Decode.map
+        Dict.values
+    <|
+        Decode.dict
+            (Decode.map (\file -> FileNode file)
+                (Decode.object5 File
+                    (Decode.at [ "filename" ] Decode.string)
+                    (Decode.at [ "type" ] Decode.string)
+                    (Decode.at [ "size" ] Decode.int)
+                    (Decode.at [ "content" ] Decode.string)
+                    (Decode.at [ "raw_url" ] Decode.string)
+                )
             )
-        )
 
 
 decodeUserMeta : Decode.Decoder UserMeta
@@ -39,10 +42,11 @@ decodeUserMeta =
                 << Decode.at [ "projects" ]
              <|
                 Decode.map
-                    Dict.toList
+                    Dict.values
                     (Decode.dict <|
-                        Decode.object4 Project
+                        Decode.object5 Project
                             (Decode.at [ "name" ] Decode.string)
+                            (Decode.at [ "gistId" ] Decode.string)
                             (Decode.at [ "gistId" ] Decode.string)
                             (Decode.succeed Nothing)
                             (Decode.succeed False)

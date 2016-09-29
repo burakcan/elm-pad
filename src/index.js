@@ -3,6 +3,7 @@ import './style.css';
 import './Main/style.css'
 import './Editor/style.css';
 import './Editor/FileTree/style.css';
+import './Editor/TabBar/style.css';
 import createStore from './js/createStore';
 import { Main } from './Main.elm';
 

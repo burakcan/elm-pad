@@ -7,8 +7,8 @@ import Http
 import Task
 
 
-loadFiles : ( String, Project ) -> User -> Cmd Msg
-loadFiles ( projectId, project ) user =
+loadFiles : Project -> User -> Cmd Msg
+loadFiles project user =
     Task.perform
         LoadFilesError
         LoadFilesSuccess
@@ -22,10 +22,8 @@ loadFiles ( projectId, project ) user =
             )
             (\gist ->
                 Task.succeed <|
-                    ( projectId
-                    , { project
+                    { project
                         | files = Just gist.files
-                      }
-                    )
+                    }
             )
         )

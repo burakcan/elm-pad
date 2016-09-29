@@ -1,0 +1,16 @@
+.TabBar {
+  flex: none;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.TabBar-Tab {
+  line-height: 30px;
+  padding: 0 10px;
+  border: 1px solid #fff;
+  border-bottom: none;
+  margin-right: 10px;
+  cursor: default;
+}

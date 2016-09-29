@@ -2,11 +2,10 @@ module Editor.State exposing (init, update, subscriptions)
 
 import Border exposing (stringPort)
 import Editor.Border exposing (filePort)
-import Editor.Types exposing (Model, Msg(..), User)
+import Editor.Types exposing (Model, Msg(..), User, Project)
 import Editor.Tasks.FetchUserMeta exposing (fetchUserMeta)
 import Editor.Tasks.CreateProject exposing (createProject)
 import Editor.Tasks.LoadFiles exposing (loadFiles)
-import Editor.Selectors exposing (getProjectById)
 import Maybe exposing (withDefault)
 import List
 
@@ -20,7 +19,7 @@ init user =
       , activeFile = Nothing
       }
     , Cmd.batch
-        [ stringPort ( "INIT_EDITOR", "aceArea" )
+        [ stringPort ( "MOUNT_EDITOR", "aceArea" )
         , fetchUserMeta user
         ]
     )
@@ -63,17 +62,17 @@ update msg model =
             CreateProjectError err ->
                 ( model, Cmd.none )
 
-            LoadFilesSuccess ( id, project ) ->
+            LoadFilesSuccess project ->
                 let
                     projects =
-                        List.map
-                            (\( id_, project_ ) ->
-                                if id == id_ then
-                                    ( id_, { project_ | files = project.files } )
-                                else
-                                    ( id_, project_ )
-                            )
+                        changeProjectWithId
                             model.projects
+                            project.id
+                            (\item ->
+                                { item
+                                    | files = project.files
+                                }
+                            )
                 in
                     ( { model
                         | projects = projects
@@ -84,22 +83,22 @@ update msg model =
             LoadFilesError err ->
                 ( model, Cmd.none )
 
-            ToggleExpandProject ( id, project ) ->
+            ToggleExpandProject project ->
                 let
                     projects =
-                        List.map
-                            (\( id_, project_ ) ->
-                                if id == id_ then
-                                    ( id, { project | expanded = not project.expanded } )
-                                else
-                                    ( id_, project_ )
-                            )
+                        changeProjectWithId
                             model.projects
+                            project.id
+                            (\item ->
+                                { item
+                                    | expanded = not item.expanded
+                                }
+                            )
                 in
                     ( { model
                         | projects = projects
                       }
-                    , loadFiles ( id, project ) model.user
+                    , loadFiles project model.user
                     )
 
             OpenFile file ->
@@ -127,3 +126,15 @@ update msg model =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.none
+
+
+changeProjectWithId : List Project -> String -> (Project -> Project) -> List Project
+changeProjectWithId projects targetId fn =
+    List.map
+        (\project ->
+            if project.id == targetId then
+                fn project
+            else
+                project
+        )
+        projects

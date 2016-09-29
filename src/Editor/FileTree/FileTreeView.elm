@@ -21,20 +21,20 @@ fileTreeView : Model -> Html Msg
 fileTreeView model =
     let
         _ =
-            Debug.log "open: " model.openFiles
+            Debug.log "model: " model
     in
         div [ class "FileTree" ] <| List.map projectView model.projects
 
 
-projectView : ( String, Project ) -> Html Msg
-projectView ( id, project ) =
+projectView : Project -> Html Msg
+projectView project =
     div []
         [ div
             [ classList
                 [ ( "FileTree-Project", True )
                 , ( "expanded", project.expanded )
                 ]
-            , onClick <| ToggleExpandProject ( id, project )
+            , onClick <| ToggleExpandProject project
             ]
             [ i [ class "material-icons project-chevron" ] [ text "chevron_right" ]
             , span [ class "project-title" ] [ text project.name ]
@@ -55,25 +55,25 @@ walkTree files =
             text "nothing"
 
         Just nodes ->
-            div [] <| List.map nodeView <| Dict.toList nodes
+            div [] <| List.map nodeView nodes
 
 
-nodeView : ( String, FileTreeNode ) -> Html Msg
-nodeView ( name, node ) =
+nodeView : FileTreeNode -> Html Msg
+nodeView node =
     case node of
         FileNode node ->
-            fileNodeView ( name, node )
+            fileNodeView node
 
         FolderNode node ->
             text "Folders are not supported yet."
 
 
-fileNodeView : ( String, File ) -> Html Msg
-fileNodeView ( name, file ) =
+fileNodeView : File -> Html Msg
+fileNodeView file =
     div
         [ classList
             [ ( "FileTree-File", True )
             ]
-        , onDoubleClick <| OpenFile ( name, file )
+        , onDoubleClick <| OpenFile file
         ]
-        [ text name ]
+        [ text file.name ]

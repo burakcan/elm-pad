@@ -29,11 +29,11 @@ type Msg
     | CreateProject
     | CreateProjectSuccess Project
     | CreateProjectError FetchError
-    | LoadFilesSuccess ( String, Project )
+    | LoadFilesSuccess Project
     | LoadFilesError FetchError
-    | ToggleExpandProject ( String, Project )
-    | OpenFile ( String, File )
-    | ActivateFile ( String, File )
+    | ToggleExpandProject Project
+    | OpenFile File
+    | ActivateFile File
 
 
 
@@ -41,7 +41,7 @@ type Msg
 
 
 type alias UserMeta =
-    { projects : List ( String, Project )
+    { projects : List Project
     }
 
 
@@ -87,7 +87,7 @@ type FileTreeNode
 
 
 type alias FileTree =
-    Dict String FileTreeNode
+    List FileTreeNode
 
 
 
@@ -97,6 +97,7 @@ type alias FileTree =
 type alias Project =
     { name : String
     , gistId : String
+    , id : String
     , files : Maybe FileTree
     , expanded : Bool
     }
@@ -120,8 +121,8 @@ type alias Gist =
 
 type alias Model =
     { user : User
-    , projects : List ( String, Project )
+    , projects : List Project
     , showCreateProject : Bool
-    , openFiles : List ( String, File )
-    , activeFile : Maybe ( String, File )
+    , openFiles : List File
+    , activeFile : Maybe File
     }

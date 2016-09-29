@@ -63,6 +63,7 @@ saveToUserMeta input user gist =
                     (Project
                         input.name
                         gist.id
+                        gist.id
                         (Just gist.files)
                         False
                     )

@@ -12,14 +12,14 @@ tabBarView model =
     div [ class "TabBar" ] <| List.map (tabView model) model.openFiles
 
 
-tabView : Model -> ( String, File ) -> Html Msg
-tabView model ( name, file ) =
+tabView : Model -> File -> Html Msg
+tabView model file =
     div
         [ classList
             [ ( "TabBar-Tab", True )
-            , ( "active", model.activeFile == Just ( name, file ) )
+            , ( "active", model.activeFile == Just file )
             ]
-        , onClick <| ActivateFile ( name, file )
+        , onClick <| ActivateFile file
         ]
-        [ text name
+        [ text file.name
         ]
