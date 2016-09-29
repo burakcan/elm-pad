@@ -45,9 +45,14 @@
 
 .RightBlock .AceArea {
   flex: 1;
+  display: flex;
   border: 1px solid #455A64;
   margin-right: 10px;
   margin-bottom: 10px;
+}
+
+.RightBlock .AceArea .ace_editor {
+  flex: 1;
 }
 
 .Overlay {

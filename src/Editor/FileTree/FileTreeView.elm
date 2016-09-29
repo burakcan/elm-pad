@@ -19,11 +19,7 @@ import Dict
 
 fileTreeView : Model -> Html Msg
 fileTreeView model =
-    let
-        _ =
-            Debug.log "model: " model
-    in
-        div [ class "FileTree" ] <| List.map projectView model.projects
+    div [ class "FileTree" ] <| List.map projectView model.projects
 
 
 projectView : Project -> Html Msg

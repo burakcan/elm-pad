@@ -7,6 +7,7 @@ import Editor.Tasks.FetchUserMeta exposing (fetchUserMeta)
 import Editor.Tasks.CreateProject exposing (createProject)
 import Editor.Tasks.LoadFiles exposing (loadFiles)
 import Maybe exposing (withDefault)
+import Task
 import List
 
 
@@ -27,100 +28,101 @@ init user =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    let
-        _ =
-            Debug.log "msg" msg
-    in
-        case msg of
-            FetchUserMetaSuccess userMeta ->
+    case msg of
+        FetchUserMetaSuccess userMeta ->
+            ( { model
+                | projects = userMeta.projects
+              }
+            , Cmd.none
+            )
+
+        FetchUserMetaError _ ->
+            ( model, Cmd.none )
+
+        CreateProject ->
+            ( model
+            , createProject
+                { name = "Deneme"
+                , description = "description deneme"
+                , private = True
+                , files =
+                    [ ( "Main.elm", "deneme deneme main.elm" )
+                    , ( "elm-package.json", "two file deneme" )
+                    ]
+                }
+                model.user
+            )
+
+        CreateProjectSuccess result ->
+            ( model, fetchUserMeta model.user )
+
+        CreateProjectError err ->
+            ( model, Cmd.none )
+
+        LoadFilesSuccess project ->
+            let
+                projects =
+                    changeProjectWithId
+                        model.projects
+                        project.id
+                        (\item ->
+                            { item
+                                | files = project.files
+                            }
+                        )
+            in
                 ( { model
-                    | projects = userMeta.projects
+                    | projects = projects
                   }
                 , Cmd.none
                 )
 
-            FetchUserMetaError _ ->
-                ( model, Cmd.none )
+        LoadFilesError err ->
+            ( model, Cmd.none )
 
-            CreateProject ->
-                ( model
-                , createProject
-                    { name = "Deneme"
-                    , description = "description deneme"
-                    , private = True
-                    , files =
-                        [ ( "Main.elm", "deneme deneme main.elm" )
-                        , ( "elm-package.json", "two file deneme" )
-                        ]
-                    }
-                    model.user
-                )
-
-            CreateProjectSuccess result ->
-                ( model, fetchUserMeta model.user )
-
-            CreateProjectError err ->
-                ( model, Cmd.none )
-
-            LoadFilesSuccess project ->
-                let
-                    projects =
-                        changeProjectWithId
-                            model.projects
-                            project.id
-                            (\item ->
-                                { item
-                                    | files = project.files
-                                }
-                            )
-                in
-                    ( { model
-                        | projects = projects
-                      }
-                    , Cmd.none
-                    )
-
-            LoadFilesError err ->
-                ( model, Cmd.none )
-
-            ToggleExpandProject project ->
-                let
-                    projects =
-                        changeProjectWithId
-                            model.projects
-                            project.id
-                            (\item ->
-                                { item
-                                    | expanded = not item.expanded
-                                }
-                            )
-                in
-                    ( { model
-                        | projects = projects
-                      }
-                    , loadFiles project model.user
-                    )
-
-            OpenFile file ->
-                let
-                    openFiles =
-                        if List.member file model.openFiles then
-                            model.openFiles
-                        else
-                            file :: model.openFiles
-                in
-                    ( { model
-                        | openFiles = openFiles
-                      }
-                    , filePort ( "OPEN_FILE", file )
-                    )
-
-            ActivateFile file ->
+        ToggleExpandProject project ->
+            let
+                projects =
+                    changeProjectWithId
+                        model.projects
+                        project.id
+                        (\item ->
+                            { item
+                                | expanded = not item.expanded
+                            }
+                        )
+            in
                 ( { model
-                    | activeFile = Just file
+                    | projects = projects
                   }
-                , filePort ( "ACTIVATE_FILE", file )
+                , loadFiles project model.user
                 )
+
+        OpenFile file ->
+            let
+                ( openFiles, cmd ) =
+                    if List.member file model.openFiles then
+                        ( model.openFiles, Cmd.none )
+                    else
+                        ( model.openFiles ++ [ file ]
+                        , Cmd.batch
+                            [ filePort ( "ACTIVATE_FILE", ( "aceArea", file ) )
+                            , filePort ( "OPEN_FILE", ( "aceArea", file ) )
+                            ]
+                        )
+            in
+                ( { model
+                    | openFiles = openFiles
+                  }
+                , cmd
+                )
+
+        ActivateFile file ->
+            ( { model
+                | activeFile = Just file
+              }
+            , filePort ( "ACTIVATE_FILE", ( "aceArea", file ) )
+            )
 
 
 subscriptions : Model -> Sub Msg

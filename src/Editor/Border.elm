@@ -6,4 +6,4 @@ import Editor.Types exposing (File)
 port editorUnitPort : ( String, () ) -> Cmd msg
 
 
-port filePort : ( String, File ) -> Cmd msg
+port filePort : ( String, ( String, File ) ) -> Cmd msg
