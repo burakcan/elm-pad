@@ -22,11 +22,10 @@ loadFiles ( projectId, project ) user =
             )
             (\gist ->
                 Task.succeed <|
-                    Just
-                        ( projectId
-                        , { project
-                            | files = Just gist.files
-                          }
-                        )
+                    ( projectId
+                    , { project
+                        | files = Just gist.files
+                      }
+                    )
             )
         )

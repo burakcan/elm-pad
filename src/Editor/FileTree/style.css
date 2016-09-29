@@ -1,0 +1,27 @@
+.FileTree {
+  padding: 10px 0;
+}
+
+.FileTree-Project {
+  padding: 14px 10px 14px 20px;
+  font-weight: 400;
+  color: #fff;
+  font-size: 12px;
+}
+
+.FileTree-Project .project-title,
+.FileTree-Project .project-chevron {
+  vertical-align: middle;
+}
+
+.FileTree-Project.expanded .project-chevron {
+  transform: rotateZ(90deg);
+}
+
+.FileTree-File {
+  padding: 7px 10px 7px 46px;
+  font-weight: 400;
+  color: #fff;
+  font-size: 12px;
+  cursor: default;
+}

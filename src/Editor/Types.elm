@@ -6,6 +6,7 @@ module Editor.Types
         , User
         , UserMeta
         , File
+        , Folder
         , FileTree
         , FileTreeNode(..)
         , Project
@@ -28,6 +29,11 @@ type Msg
     | CreateProject
     | CreateProjectSuccess Project
     | CreateProjectError FetchError
+    | LoadFilesSuccess ( String, Project )
+    | LoadFilesError FetchError
+    | ToggleExpandProject ( String, Project )
+    | OpenFile ( String, File )
+    | ActivateFile ( String, File )
 
 
 
@@ -65,6 +71,7 @@ type alias File =
     , fileType : String
     , size : Int
     , content : String
+    , url : String
     }
 
 
@@ -115,4 +122,6 @@ type alias Model =
     { user : User
     , projects : List ( String, Project )
     , showCreateProject : Bool
+    , openFiles : List ( String, File )
+    , activeFile : Maybe ( String, File )
     }

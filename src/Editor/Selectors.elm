@@ -6,21 +6,11 @@ import Maybe
 import List
 
 
-getProjects : Model -> List ( String, Project )
-getProjects model =
-    case model.userMeta of
-        Nothing ->
-            []
-
-        Just meta ->
-            meta.projects
-
-
 getProjectById : Model -> String -> Maybe ( String, Project )
 getProjectById model id =
     let
         projects =
-            getProjects model
+            model.projects
 
         project =
             List.filter (\( id_, _ ) -> id_ == id) projects

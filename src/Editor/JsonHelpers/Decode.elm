@@ -20,11 +20,12 @@ decodeGistFiles : Decode.Decoder (Dict String FileTreeNode)
 decodeGistFiles =
     Decode.dict
         (Decode.map (\file -> FileNode file)
-            (Decode.object4 File
+            (Decode.object5 File
                 (Decode.at [ "filename" ] Decode.string)
                 (Decode.at [ "type" ] Decode.string)
                 (Decode.at [ "size" ] Decode.int)
                 (Decode.at [ "content" ] Decode.string)
+                (Decode.at [ "raw_url" ] Decode.string)
             )
         )
 
