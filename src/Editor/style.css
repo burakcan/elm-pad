@@ -10,6 +10,7 @@
   flex: none;
   display: flex;
   width: 250px;
+  position: relative;
 }
 
 .SidebarContent {
@@ -17,6 +18,10 @@
 }
 
 .SidebarResizer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
   width: 5px;
   cursor: col-resize;
 }
@@ -49,6 +54,8 @@
   border: 1px solid #1f1f1f;
   margin-right: 10px;
   margin-bottom: 10px;
+  border-radius: 3px;
+  overflow: hidden;
 }
 
 .RightBlock .AceArea .ace_editor {

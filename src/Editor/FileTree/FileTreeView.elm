@@ -10,7 +10,7 @@ import Editor.Types
         , FileTreeNode(..)
         , Project
         )
-import Html exposing (Html, div, text, i, span)
+import Html exposing (Html, div, text, i, span, button)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick, onDoubleClick)
 import List
@@ -25,15 +25,15 @@ fileTreeView model =
 projectView : Project -> Html Msg
 projectView project =
     div []
-        [ div
+        [ button
             [ classList
                 [ ( "FileTree-Project", True )
                 , ( "expanded", project.expanded )
                 ]
             , onClick <| ToggleExpandProject project
             ]
-            [ i [ class "material-icons project-chevron" ] [ text "chevron_right" ]
-            , span [ class "project-title" ] [ text project.name ]
+            [ span [ class "project-title" ] [ text project.name ]
+            , i [ class "material-icons project-chevron" ] [ text "chevron_right" ]
             ]
         , div []
             [ if project.expanded then
@@ -51,7 +51,7 @@ walkTree files =
             text "nothing"
 
         Just nodes ->
-            div [] <| List.map nodeView nodes
+            div [ class "FileTree-Project-Content" ] <| List.map nodeView nodes
 
 
 nodeView : FileTreeNode -> Html Msg
@@ -66,10 +66,11 @@ nodeView node =
 
 fileNodeView : File -> Html Msg
 fileNodeView file =
-    div
+    button
         [ classList
             [ ( "FileTree-File", True )
             ]
         , onDoubleClick <| OpenFile file
         ]
-        [ text file.name ]
+        [ span [ class "file-title" ] [ text file.name ]
+        ]
