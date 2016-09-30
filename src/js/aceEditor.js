@@ -1,16 +1,7 @@
 import ace from 'brace';
-import 'brace/ext/statusbar';
-import 'brace/ext/searchbox';
-import 'brace/mode/elm';
-import 'brace/mode/json';
-import 'brace/mode/html';
-import 'brace/mode/javascript';
-import 'brace/mode/css';
-import 'brace/theme/cobalt';
+import './aceExtensions';
 
 const editors = {};
-
-window.asd = ace;
 
 function pollElement(id) {
   return new Promise(resolve => {
@@ -34,32 +25,46 @@ function mountEditor(dispatch, id) {
 
   pollElement(id)
   .then(element => {
+    window.asd = editor;
+    editor.getSession().setMode(`ace/mode/elm`)
     element.appendChild(editor.container);
-    editor.setTheme('ace/theme/cobalt');
+    editor.setTheme('ace/theme/tomorrow');
     editor.setOptions({
       scrollPastEnd: 1,
     });
   });
 }
 
-function openFile(dispatch, [id, file]) {
+function openFile(dispatch, [editorId, file]) {
   const session = ace.createEditSession(file.content);
-  editors[id].sessions[file.url] = session;
+  editors[editorId].sessions[file.url] = session;
+
+  activateFile(dispatch, [editorId, file]);
 }
 
-function activateFile(dispatch, [id, file]) {
-  editors[id].editor.setSession(
-    editors[id].sessions[file.url]
+function activateFile(dispatch, [editorId, file]) {
+  editors[editorId].editor.setSession(
+    editors[editorId].sessions[file.url]
   );
 
   const fileExtension = file.name.split('.').pop();
-  editors[id].sessions[file.url].setMode(`ace/mode/${fileExtension}`);
+  editors[editorId].sessions[file.url].setMode(`ace/mode/${fileExtension}`);
 }
+
+
+function closeFile(dispatch, [editorId, file]) {
+  const editor = editors[editorId].editor;
+  const session = editors[editorId].sessions[file.url];
+  delete editors[editorId].sessions[file.url];
+
+  if (!Object.keys(editors[editorId].sessions).length) {
+    editor.setSession(ace.createEditSession(""));
+  }
+}
+
 
 export default ({ dispatch }) => next => action => {
   next(action);
-
-  console.log(action);
 
   switch (action.type) {
     case "MOUNT_EDITOR":
@@ -72,5 +77,10 @@ export default ({ dispatch }) => next => action => {
 
     case "ACTIVATE_FILE":
       activateFile(dispatch, action.payload);
+      break;
+
+    case "CLOSE_FILE":
+      closeFile(dispatch, action.payload);
+      break;
   }
 }

@@ -34,6 +34,7 @@ type Msg
     | ToggleExpandProject Project
     | OpenFile File
     | ActivateFile File
+    | CloseFile File
 
 
 

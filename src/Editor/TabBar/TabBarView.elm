@@ -1,7 +1,7 @@
 module Editor.TabBar.TabBarView exposing (tabBarView)
 
 import Editor.Types exposing (Model, Msg(..), File)
-import Html exposing (Html, div, text)
+import Html exposing (Html, div, text, button)
 import Html.Attributes exposing (class, classList)
 import Html.Events exposing (onClick)
 import List
@@ -19,7 +19,7 @@ tabView model file =
             [ ( "TabBar-Tab", True )
             , ( "active", model.activeFile == Just file )
             ]
-        , onClick <| ActivateFile file
         ]
-        [ text file.name
+        [ button [ onClick <| ActivateFile file ] [ text file.name ]
+        , button [ onClick <| CloseFile file ] [ text "X" ]
         ]

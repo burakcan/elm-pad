@@ -105,14 +105,12 @@ update msg model =
                         ( model.openFiles, Cmd.none )
                     else
                         ( model.openFiles ++ [ file ]
-                        , Cmd.batch
-                            [ filePort ( "ACTIVATE_FILE", ( "aceArea", file ) )
-                            , filePort ( "OPEN_FILE", ( "aceArea", file ) )
-                            ]
+                        , filePort ( "OPEN_FILE", ( "aceArea", file ) )
                         )
             in
                 ( { model
                     | openFiles = openFiles
+                    , activeFile = Just file
                   }
                 , cmd
                 )
@@ -123,6 +121,28 @@ update msg model =
               }
             , filePort ( "ACTIVATE_FILE", ( "aceArea", file ) )
             )
+
+        CloseFile file ->
+            let
+                newModel =
+                    { model
+                        | openFiles = List.filter ((/=) file) model.openFiles
+                    }
+
+                ( activateModel, activateCmd ) =
+                    case List.head newModel.openFiles of
+                        Nothing ->
+                            ( newModel, Cmd.none )
+
+                        Just file ->
+                            update (ActivateFile file) (newModel)
+            in
+                ( activateModel
+                , Cmd.batch
+                    [ filePort ( "CLOSE_FILE", ( "aceArea", file ) )
+                    , activateCmd
+                    ]
+                )
 
 
 subscriptions : Model -> Sub Msg

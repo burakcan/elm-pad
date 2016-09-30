@@ -46,7 +46,7 @@
 .RightBlock .AceArea {
   flex: 1;
   display: flex;
-  border: 1px solid #455A64;
+  border: 1px solid #1f1f1f;
   margin-right: 10px;
   margin-bottom: 10px;
 }
